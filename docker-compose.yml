@@ -1,0 +1,33 @@
+# planiva-ai-agent/docker-compose.yml
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # These should be replaced with your actual Supabase credentials
+      SUPABASE_URL: "YOUR_SUPABASE__URL"
+      SUPABASE_KEY: "YOUR_SUPABASE_ANON_KEY"
+      OPENAI_API_KEY: "YOUR_OPENAI_API_KEY" # Or other LLM provider API key
+    volumes:
+      - ./backend:/app # Mount the backend code for live reloading during development
+    depends_on:
+      - frontend # Frontend might need to wait for backend, depending on how you handle initial data fetching. Consider carefully if this dependency is truly needed for *startup* or just for API calls.
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_URL: "http://localhost:8000" # Or the Docker service name 'backend' if communicating within the Docker network
+    volumes:
+      - ./frontend:/app # Mount the frontend code for live reloading during development
+      - /app/node_modules # Exclude node_modules from the bind mount to prevent host/container conflicts
+    depends_on:
+      - backend
