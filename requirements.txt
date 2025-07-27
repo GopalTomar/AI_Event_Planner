@@ -1,0 +1,7 @@
+# backend/requirements.txt
+fastapi
+uvicorn
+supabase
+google-generativeai  # Replaced openai
+pydantic
+python-dotenv
